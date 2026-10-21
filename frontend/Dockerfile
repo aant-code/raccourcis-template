@@ -1,7 +1,7 @@
 FROM node:22.12
-WORKDIR /frontend
-COPY package.json .
-RUN npm install
+WORKDIR /front
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
 EXPOSE 5173
 CMD [ "npm", "run", "dev" ]
