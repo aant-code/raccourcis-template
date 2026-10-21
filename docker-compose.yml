@@ -1,20 +1,14 @@
 services:
   api:
-    build: 
-      context: ./backend
-      platforms: ["linux/amd64", "linux/arm64"]
+    build: ./backend
     image: aantt/raccourcis-api
     volumes:
       - ./content:/app/content
 
   frontend:
-    build: 
-      context: ./frontend
-      platforms: ["linux/amd64", "linux/arm64"]
+    build: ./frontend
     image: aantt/raccourcis-frontend
     ports:
-      - "5173:5173"
-    environment:
-      API_PROXY_TARGET: http://api:5050
+      - "5173:80"
     depends_on:
       - api
