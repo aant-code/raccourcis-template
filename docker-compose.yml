@@ -1,0 +1,14 @@
+services:
+  api:
+    build: ./backend
+    volumes:
+      - ./content:/app/content
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      API_PROXY_TARGET: http://api:5050
+    depends_on:
+      - api
