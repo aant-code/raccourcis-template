@@ -1,11 +1,17 @@
 services:
   api:
-    build: ./backend
+    build: 
+      context: ./backend
+      platforms: ["linux/amd64", "linux/arm64"]
+    image: aantt/raccourcis-api
     volumes:
       - ./content:/app/content
 
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      platforms: ["linux/amd64", "linux/arm64"]
+    image: aantt/raccourcis-frontend
     ports:
       - "5173:5173"
     environment:
