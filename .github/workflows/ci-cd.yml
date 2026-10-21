@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ci-cd
+  cancel-in-progress: false
+
 jobs:
   build-push:
     runs-on: ubuntu-latest
@@ -26,3 +30,22 @@ jobs:
         run: |
           docker build -t aantt/raccourcis-frontend:latest -t aantt/raccourcis-frontend:${{ github.sha }} ./frontend
           docker push --all-tags aantt/raccourcis-frontend
+
+  deploy:
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configurer SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+
+      - name: Déployer sur le VPS
+        run: ssh deploy@$VPS_HOST "cd /opt/raccourcis && docker compose pull && docker compose up -d && docker image prune -f"
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
